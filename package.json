@@ -1,0 +1,28 @@
+{
+  "name": "node-express-books-api",
+  "version": "1.0.0",
+  "description": "books-api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Roman-Trukhtanov/node-express-books-api.git"
+  },
+  "author": "roman_trukhtanov <roman_trukhtanov@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Roman-Trukhtanov/node-express-books-api/issues"
+  },
+  "homepage": "https://github.com/Roman-Trukhtanov/node-express-books-api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-form-data": "^2.0.14",
+    "node-unique-id-generator": "^0.1.0",
+    "nodemon": "^2.0.6"
+  }
+}
