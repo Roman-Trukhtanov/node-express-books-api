@@ -1,0 +1,47 @@
+<%- include("../partials/layout-start", {title: title}) %>
+<%- include("../partials/menu") %>
+<h1>
+    <%= title %>
+</h1>
+
+<div class="row">
+    <div class="col-sm-8">
+        <div class="card">
+            <% if(book.fileCover) { %>
+                <img class="card-img-top" src="/<%= book.fileCover %>" alt="Card image cap" style="width: 11rem;">
+            <% } %>
+            <div class="card-body">
+                <h5 class="card-title">
+                    <%= book.title %>
+                </h5>
+
+                <p class="card-text">
+                    <%= book.description %>
+                </p>
+                <p class="card-text">
+                    <%= book.authors %>
+                </p>
+                <p class="card-text">
+                    <%= book.favorite %>
+                </p>
+
+                <div class="text-right">
+                    <a class="btn btn-sm btn-primary" href="/books/update/<%= book.id %>">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </a>
+                    <a class="btn btn-sm btn-info" href="/books/<%= book.id %>/download">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </a>
+                    <form action="/books/delete/<%= book.id %>" method="POST" class="d-inline">
+                        <button class="btn btn-sm btn-danger">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include("../partials/layout-end") %>

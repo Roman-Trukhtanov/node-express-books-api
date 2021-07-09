@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Roman-Trukhtanov/node-express-books-api#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "multer": "^1.4.2",
     "node-unique-id-generator": "^0.1.0",
