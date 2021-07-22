@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  redis:
+    image: redis
+    volumes:
+      - ./logs_data:/var/log
+  counter-app:
+    build: ./
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - PORT=6379
+      - REDIS_URL=redis://redis:6379
+    links:
+      - redis
+volumes:
+  logs_data: {}

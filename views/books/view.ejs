@@ -24,6 +24,11 @@
                 <p class="card-text">
                     <%= book.favorite %>
                 </p>
+                <% if(viewsAmount) { %>
+                    <p class="card-text">
+                        Просмотры: <%= viewsAmount %>
+                    </p>
+                <% } %>
 
                 <div class="text-right">
                     <a class="btn btn-sm btn-primary" href="/books/update/<%= book.id %>">

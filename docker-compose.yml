@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  redis:
+    image: redis 
+    volumes:
+      - ./counter-app/logs_data:/var/log
+  counter-app:
+    build: ./counter-app
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - PORT=6379
+      - REDIS_URL=redis://redis:6379
+    links: 
+      - redis
+  node-books-app:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - COUNTER_API_HOST=host.docker.internal
+      - COUNTER_API_PORT=6379
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+volumes:
+  logs_data: {}

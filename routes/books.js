@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Book } = require('../models');
 const fileMiddleware = require('../middleware/book-file');
+const counterApi = require('../core/counter-api');
 
 const store = {
   books: [],
@@ -15,19 +16,33 @@ const bookFiles = [
 const addDefaultBooksToStore = (store, data) => {
   data.map((el) => {
     const newBook = new Book(
-      `Book ${el}`,
-      `description book ${el}`,
-      `Authors book ${el}`,
-      `Favorite book ${el}`,
+      `Book ${el.num}`,
+      `description book ${el.num}`,
+      `Authors book ${el.num}`,
+      `Favorite book ${el.num}`,
       `public\\covers\\7-strategies-cover.jpg`,
       `7_Strategies_for_Wealth_and_Happiness.pdf`,
-      `public\\books\\7_Strategies_for_Wealth_and_Happiness.fb2`
+      `public\\books\\7_Strategies_for_Wealth_and_Happiness.fb2`,
+      el.id
     );
     store.books.push(newBook);
   });
 };
 
-addDefaultBooksToStore(store, [1, 2, 3]);
+addDefaultBooksToStore(store, [
+  {
+    id: '1626934022262837801664a337e843',
+    num: 1,
+  },
+  {
+    id: '162693402226283838136452b02055',
+    num: 2,
+  },
+  {
+    id: '1626934022262838433364b353c94e',
+    num: 3,
+  },
+]);
 
 router.get('/', (req, res) => {
   const { books } = store;
@@ -70,7 +85,7 @@ router.post('/create', fileMiddleware.fields(bookFiles), (req, res) => {
   res.redirect('/books');
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { books } = store;
   const { id } = req.params;
   const idx = books.findIndex((el) => el.id === id);
@@ -81,10 +96,18 @@ router.get('/:id', (req, res) => {
     return;
   }
 
-  res.render('books/view', {
-    title: 'Book | view',
-    book: books[idx],
-  });
+  counterApi
+    .post(id)
+    .then((data) => {
+      res.render('books/view', {
+        title: 'Book | view',
+        book: books[idx],
+        viewsAmount: data.counter,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
 });
 
 router.get('/update/:id', (req, res) => {
