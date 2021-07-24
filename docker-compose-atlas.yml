@@ -1,0 +1,33 @@
+version: '3.9'
+services: 
+  redis:
+    image: redis 
+    volumes:
+      - ./counter-app/logs_data:/var/log
+  counter-app:
+    build: ./counter-app
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - PORT=6379
+      - REDIS_URL=redis://redis:6379
+    links: 
+      - redis
+  node-books-app:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - ATLAS_DB=ATLAS_DB
+      - COUNTER_API_HOST=counter-app://counter-app:6379
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-books_db}
+    depends_on: 
+      - counter-app
+    env_file:
+      - .atlas.env 
+volumes:
+  logs_data: {}      

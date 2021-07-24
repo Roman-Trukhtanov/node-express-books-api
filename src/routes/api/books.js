@@ -2,50 +2,43 @@ const express = require('express');
 const router = express.Router();
 const { Book } = require('../../models');
 const fileMiddleware = require('../../middleware/book-file');
+const counterApi = require('../../core/counter-api');
 
-const store = {
-  books: [],
-};
-
-const addDefaultBooksToStore = (store, data) => {
-  data.map((el) => {
-    const newBook = new Book(
-      `Book ${el}`,
-      `description book ${el}`,
-      `Authors book ${el}`,
-      `Favorite book ${el}`,
-      `FileCover ${el}`,
-      `FileName ${el}`,
-      `public\\books\\7_Strategies_for_Wealth_and_Happiness.fb2`
-    );
-    store.books.push(newBook);
-  });
-};
-
-addDefaultBooksToStore(store, [1, 2, 3]);
-
-router.get('/', (req, res) => {
-  const { books } = store;
+router.get('/', async (req, res) => {
+  const books = await Book.find().select('-__v');
   res.json(books);
 });
 
-router.get('/:id', (req, res) => {
-  const { books } = store;
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id === id);
+  let book;
+  let counterData;
 
-  if (idx === -1) {
+  try {
+    book = await Book.findOne({ id }).select('-__v');
+  } catch (err) {
+    console.error(err);
+  }
+
+  if (!book) {
     res.status(404);
     res.json('Book | not found');
-
     return;
   }
 
-  res.json(books[idx]);
+  try {
+    counterData = await counterApi.post(id);
+  } catch (err) {
+    console.error(err);
+    res.status(500);
+    res.json(err);
+    return;
+  }
+
+  res.json({ book, counter: counterData.counter });
 });
 
-router.post('/', (req, res) => {
-  const { books } = store;
+router.post('/', async (req, res) => {
   const {
     title,
     description,
@@ -56,24 +49,8 @@ router.post('/', (req, res) => {
     fileBook,
   } = req.body;
 
-  const newBook = new Book(
-    title,
-    description,
-    authors,
-    favorite,
-    fileCover,
-    fileName,
-    fileBook
-  );
-  books.push(newBook);
-
-  res.status(201);
-  res.json(newBook);
-});
-
-router.put('/:id', (req, res) => {
-  const { books } = store;
-  const {
+  // CREATE NEW_BOOK
+  const newBook = new Book({
     title,
     description,
     authors,
@@ -81,41 +58,76 @@ router.put('/:id', (req, res) => {
     fileCover,
     fileName,
     fileBook,
-  } = req.body;
-  const { id } = req.params;
-  const idx = books.findIndex((el) => el.id === id);
-
-  if (idx === -1) {
-    res.status(404);
-    res.json('Book | not found');
-
-    return;
-  }
-
-  books[idx] = Object.assign(books[idx], {
-    title: title || books[idx].title,
-    description: description || books[idx].description,
-    authors: authors || books[idx].authors,
-    favorite: favorite || books[idx].favorite,
-    fileCover: fileCover || books[idx].fileCover,
-    fileName: fileName || books[idx].fileName,
-    fileBook: fileBook || books[idx].fileBook,
   });
 
-  res.json(books[idx]);
+  // SAVE NEW_BOOK
+  try {
+    await newBook.save();
+
+    res.status(201);
+    res.json(newBook);
+  } catch (e) {
+    console.error(e);
+    res.status(500);
+    res.json('Book validation errors');
+  }
 });
 
-router.delete('/:id', (req, res) => {
-  const { books } = store;
+router.put('/:id', async (req, res) => {
+  const {
+    title,
+    description,
+    authors,
+    favorite,
+    fileCover,
+    fileName,
+    fileBook,
+  } = req.body;
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id === id);
+  let book;
 
-  if (idx === -1) {
-    res.status(404);
-    res.json('Book | not found');
+   try {
+     book = await Book.findOne({ id });
+   } catch (e) {
+     console.error(e);
+   }
+
+   if (!book) {
+     res.status(404);
+     res.json('Book | not found');
+     return;
+   }
+
+  try {
+    book = Object.assign(book, {
+      title,
+      description,
+      authors,
+      favorite,
+      fileCover,
+      fileName,
+      fileBook,
+    });
+    await book.save();
+  } catch (e) {
+    console.error(e);
   }
 
-  books.splice(idx, 1);
+  res.json(book);
+});
+
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await Book.findOneAndDelete({ id });
+  } catch (err) {
+    console.error(err);
+    res.status(404);
+    res.json('Book | not found');
+    return;
+  }
+
   res.json(true);
 });
 
@@ -129,24 +141,26 @@ router.post('/upload', fileMiddleware.single('book_file'), (req, res) => {
   }
 });
 
-router.get('/:id/download', (req, res) => {
-  const { books } = store;
+router.get('/:id/download', async (req, res) => {
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id === id);
+  let book;
 
-  if (idx === -1) {
+  try {
+    book = await Book.findOne({ id });
+  } catch (err) {
+    console.error(err);
+  }
+
+  if (!book) {
     res.status(404);
     res.json('Book file | not found');
-
     return;
   }
 
-  const bookPath = books[idx].fileBook;
-  const bookName = books[idx].fileName;
-
-  res.download(__dirname + `/../${bookPath}`, bookName, (err) => {
+  res.download(__dirname + `/../../../${book.fileBook}`, book.fileName, (err) => {
     if (err) {
-      res.status(404).json();
+      console.error(err);
+      res.status(404).json({err});
     }
   });
 });
