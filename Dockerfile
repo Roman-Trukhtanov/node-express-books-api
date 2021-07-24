@@ -5,11 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY *.js ./
-COPY core/ ./core/
-COPY middleware/ ./middleware/
-COPY models/ ./models/
-COPY public/ ./public/
-COPY routes/ ./routes/
-COPY views/ ./views/
+COPY public/ ./public
+COPY src/ ./src
 
 CMD ["npm", "run", "start"]

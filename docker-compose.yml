@@ -20,9 +20,8 @@ services:
       - 3000:3000
     environment:
       - PORT=3000
-      - COUNTER_API_HOST=host.docker.internal
-      - COUNTER_API_PORT=6379
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - COUNTER_API_HOST=counter-app://counter-app:6379
+    depends_on: 
+      - counter-app
 volumes:
   logs_data: {}

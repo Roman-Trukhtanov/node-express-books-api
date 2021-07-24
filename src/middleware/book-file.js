@@ -4,7 +4,7 @@ const {
   PUBLIC_COVERS_PATH,
   ALLOWED_FILE_TYPES,
   ALLOWED_IMG_TYPES,
-} = require('../const');
+} = require('../../const');
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {

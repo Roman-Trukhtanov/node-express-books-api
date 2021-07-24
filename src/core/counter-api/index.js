@@ -1,7 +1,4 @@
-const axios = require('axios');
-
-const COUNTER_API_HOST = process.env.COUNTER_API_HOST || 'localhost';
-const COUNTER_API_PORT = process.env.COUNTER_API_PORT || 6379;
+const counterApi = require('./api');
 
 const StatusNumber = {
   SUCCESSFUL: 200,
@@ -13,14 +10,10 @@ const UrlPath = {
 };
 
 class CounterAPI {
-  constructor({ host, port }) {
-    this._host = host;
-    this._port = port;
-  }
   get(bookID = '') {
-    const url = `http://${this._host}:${this._port}/${UrlPath.COUNTER}/${bookID}`;
+    const url = `/${UrlPath.COUNTER}/${bookID}`;
 
-    return axios
+    return counterApi
       .get(url)
       .then((res) => {
         if (
@@ -37,9 +30,9 @@ class CounterAPI {
       });
   }
   post(bookID = '') {
-    const url = `http://${this._host}:${this._port}/${UrlPath.COUNTER}/${bookID}/incr`;
-   
-    return axios
+    const url = `/${UrlPath.COUNTER}/${bookID}/incr`;
+
+    return counterApi
       .post(url)
       .then((res) => {
         if (
@@ -57,7 +50,4 @@ class CounterAPI {
   }
 }
 
-module.exports = new CounterAPI({
-  host: COUNTER_API_HOST,
-  port: COUNTER_API_PORT,
-});
+module.exports = new CounterAPI();

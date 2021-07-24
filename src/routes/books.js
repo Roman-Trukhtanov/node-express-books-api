@@ -96,18 +96,19 @@ router.get('/:id', async (req, res) => {
     return;
   }
 
-  counterApi
-    .post(id)
-    .then((data) => {
-      res.render('books/view', {
-        title: 'Book | view',
-        book: books[idx],
-        viewsAmount: data.counter,
-      });
-    })
-    .catch((err) => {
-      res.status(500).send(err);
+  try {
+    const counterData = await counterApi.post(id);
+
+    res.render('books/view', {
+      title: 'Book | view',
+      book: books[idx],
+      viewsAmount: counterData.counter || 0,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err });
+  }
+  
 });
 
 router.get('/update/:id', (req, res) => {
