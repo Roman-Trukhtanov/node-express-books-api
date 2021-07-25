@@ -1,3 +1,4 @@
+const uidGenerator = require('node-unique-id-generator');
 const express = require('express');
 const router = express.Router();
 const { Book } = require('../../models');
@@ -51,6 +52,7 @@ router.post('/', async (req, res) => {
 
   // CREATE NEW_BOOK
   const newBook = new Book({
+    id: uidGenerator.generateUniqueId(),
     title,
     description,
     authors,

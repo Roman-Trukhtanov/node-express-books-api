@@ -6,7 +6,7 @@ const todoSchema = new Schema({
   id: {
     type: String,
     unique: true,
-    default: uidGenerator.generateUniqueId(),
+    required: true,
   },
   title: {
     type: String,

@@ -1,0 +1,37 @@
+<%- include("../partials/layout-start", {title: title}) %>
+<%- include("../partials/menu") %>
+<h1><%= title %></h1>
+
+<%- include("../partials/messages") %>
+
+<div class="row">
+    <div class="col-sm-6">
+        <form method="POST" class="mt-5">
+            <div class="form-group">
+                <label for="user_name">Ваше имя:</label>
+                <input type="text" value="<%= typeof user != 'undefined' ? user.username : '' %>" name="username" class="form-control" id="user_email" required placeholder="username">
+            </div>
+
+            <div class="form-group">
+                <label for="user_email">Email:</label>
+                <input type="email" value="<%= typeof user != 'undefined' ? user.email : ''%>" name="email" class="form-control" id="user_email" required placeholder="email@test.com">
+            </div>
+
+            <div class="form-group">
+                <label for="user_password">Пароль:</label>
+                <input type="password" value="<%= typeof user != 'undefined' ? user.password : ''%>" name="password" class="form-control" id="user_password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="user_password2">Повторить пароль:</label>
+                <input type="password" value="<%= typeof user != 'undefined' ? user.password2 : ''%>" name="password2" class="form-control" id="user_password2" required>
+            </div>
+
+            <div class="form-group text-right">
+                <button type="submit" class="btn btn-primary">Зарегестрироваться</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include("../partials/layout-end") %>

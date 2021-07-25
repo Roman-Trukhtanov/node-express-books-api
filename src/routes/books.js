@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
+
+const uidGenerator = require('node-unique-id-generator');
 const { Book } = require('../models');
 const fileMiddleware = require('../middleware/book-file');
 const counterApi = require('../core/counter-api');
+uidGenerator.generateUniqueId();
 
 const bookFiles = [
   { name: 'fileCover', maxCount: 1 },
