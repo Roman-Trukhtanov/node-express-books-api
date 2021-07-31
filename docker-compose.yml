@@ -12,7 +12,7 @@ services:
     environment:
       - PORT=6379
       - REDIS_URL=redis://redis:6379
-    links: 
+    depends_on: 
       - redis
   mongodb:
     image: mongo
@@ -40,12 +40,14 @@ services:
       - 3000:3000
     environment:
       - PORT=3000
+      - REDIS_URL=redis://redis:6379
       - COUNTER_API_HOST=counter-app://counter-app:6379
       - DB_USERNAME=${DB_USERNAME:-root}
       - DB_PASSWORD=${DB_PASSWORD:-password}
       - DB_NAME=${DB_NAME:-books_db}
       - DB_HOST=mongodb://mongodb:27017
-    depends_on: 
+    depends_on:
+      - redis
       - counter-app
       - mongodb
 volumes:

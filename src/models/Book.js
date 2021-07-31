@@ -1,8 +1,6 @@
-const uidGenerator = require('node-unique-id-generator');
-
 const { Schema, model } = require('mongoose');
 
-const todoSchema = new Schema({
+const bookSchema = new Schema({
   id: {
     type: String,
     unique: true,
@@ -38,4 +36,4 @@ const todoSchema = new Schema({
   },
 });
 
-module.exports = model('Book', todoSchema);
+module.exports = model('Book', bookSchema);

@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const uidGenerator = require('node-unique-id-generator');
-const { Book } = require('../models');
+const { Book, BookRoom } = require('../models');
 const fileMiddleware = require('../middleware/book-file');
 const counterApi = require('../core/counter-api');
-uidGenerator.generateUniqueId();
 
 const bookFiles = [
   { name: 'fileCover', maxCount: 1 },
@@ -40,6 +39,7 @@ router.post('/create', fileMiddleware.fields(bookFiles), async (req, res) => {
 
   // CREATE NEW_BOOK
   const newBook = new Book({
+    id: uidGenerator.generateUniqueId(),
     title,
     description,
     authors,
@@ -158,6 +158,7 @@ router.post('/delete/:id', async (req, res) => {
 
   try {
     await Book.findOneAndDelete({ id });
+    await BookRoom.findOneAndDelete({ roomName: id });
   } catch (err) {
     console.error(err);
     res.status(404).redirect('/404');

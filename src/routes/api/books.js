@@ -1,7 +1,7 @@
 const uidGenerator = require('node-unique-id-generator');
 const express = require('express');
 const router = express.Router();
-const { Book } = require('../../models');
+const { Book, BookRoom } = require('../../models');
 const fileMiddleware = require('../../middleware/book-file');
 const counterApi = require('../../core/counter-api');
 
@@ -123,6 +123,7 @@ router.delete('/:id', async (req, res) => {
 
   try {
     await Book.findOneAndDelete({ id });
+    await BookRoom.findOneAndDelete({ roomName: id });
   } catch (err) {
     console.error(err);
     res.status(404);

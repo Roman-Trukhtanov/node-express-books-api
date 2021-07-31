@@ -5,7 +5,7 @@
 </h1>
 
 <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-8 mb-4">
         <div class="card">
             <% if(book.fileCover) { %>
                 <img class="card-img-top" src="/<%= book.fileCover %>" alt="Card image cap" style="width: 11rem;">
@@ -47,6 +47,20 @@
             </div>
         </div>
     </div>
+    <div class="col-sm-8 mb-4">
+        <div class="form-group">
+            <label for="username">Ваше имя</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Пользователь">
+        </div>
+        <div class="form-group">
+            <label for="text">Комментарий</label>
+            <textarea class="form-control" name="text" id="text" placeholder="Ваш комментарий"></textarea>
+        </div>
+        <button type="submit" id="send-comment" class="btn btn-primary">Оставить комментарий</button>
+    </div>
+    <div class="col-sm-8 mb-5">
+        <div id="comments" class="list-group"></div>
+    </div>
 </div>
 
-<%- include("../partials/layout-end") %>
+<%- include("../partials/layout-end", { withSocket: true }) %>

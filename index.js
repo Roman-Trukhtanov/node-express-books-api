@@ -1,10 +1,14 @@
 const path = require('path');
+const http = require('http');
+const socketIO = require('socket.io');
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const redis = require('redis');
+const RedisStore = require('connect-redis')(session);
 
 const loggerMiddleware = require('./src/middleware/logger');
 const errorMiddleware = require('./src/middleware/error');
@@ -16,6 +20,14 @@ const booksApiRouter = require('./src/routes/api/books');
 const userApiRouter = require('./src/routes/api/user');
 
 const app = express();
+
+
+const REDIS_URL = process.env.REDIS_URL || 'localhost';
+
+const redisClient = redis.createClient(REDIS_URL);
+
+const server = http.Server(app);
+const io = socketIO(server);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,6 +41,7 @@ app.use(
   session({
     secret: 'books_secret',
     key: 'sid',
+    store: new RedisStore({ client: redisClient }),
     cookie: {
       path: '/',
       httpOnly: true,
@@ -64,6 +77,9 @@ app.use('/api/books', booksApiRouter);
 
 app.use(errorMiddleware);
 
+const { BookRoom } = require('./src/models');
+require('./src/core/socket')(io, BookRoom, '/books');
+
 const PORT = process.env.PORT || 3000;
 const UserDB = process.env.DB_USERNAME || 'root';
 const PasswordDB = process.env.DB_PASSWORD || 'qwerty123456';
@@ -89,7 +105,7 @@ async function start() {
       });
     }
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (err) {
